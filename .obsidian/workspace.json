@@ -189,11 +189,13 @@
       "daily-notes:今日のデイリーノートを開く": false,
       "templates:テンプレートを挿入": false,
       "command-palette:コマンドパレットを開く": false,
-      "bases:新規ベースを作成": false
+      "bases:新規ベースを作成": false,
+      "github-sync-multi-platform:Obsidian-Github-Sync-Multi-Platform: すべてのノートを同期": false
     }
   },
   "active": "aeb95800535b5c32",
   "lastOpenFiles": [
+    "prompts/system_prompt_v1.md.tmp.19524.13ef552ddda9",
     "CLAUDE.md.tmp.19524.7b62c38ee145",
     "CLAUDE.md.tmp.19524.72092c174ee6",
     "prompts/system_prompt_v1.md.tmp.19524.e54a6b01b815",
