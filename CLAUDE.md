@@ -13,6 +13,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## 作業完了時のルール
+
+タスクが完了したら、必ず以下を実行する：
+
+```
+git add .
+git commit -m "<変更内容を要約したメッセージ>"
+git push
+```
+
+---
+
 ## 1. 目的とコンセプト
 
 ### 目的
