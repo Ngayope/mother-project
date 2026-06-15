@@ -4,22 +4,6 @@
     "type": "split",
     "children": [
       {
-        "id": "399df97fb7dedda6",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "721b173ae4b9f417",
-            "type": "leaf",
-            "state": {
-              "type": "empty",
-              "state": {},
-              "icon": "lucide-file",
-              "title": "新規タブ"
-            }
-          }
-        ]
-      },
-      {
         "id": "5522f8b3254acb65",
         "type": "tabs",
         "children": [
@@ -27,10 +11,14 @@
             "id": "aeb95800535b5c32",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "グラフビュー"
+              "type": "markdown",
+              "state": {
+                "file": "prompts/system_prompt_v3.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "system_prompt_v3"
             }
           }
         ]
@@ -193,18 +181,19 @@
       "github-sync-multi-platform:Obsidian-Github-Sync-Multi-Platform: すべてのノートを同期": false
     }
   },
-  "active": "aeb95800535b5c32",
+  "active": "cb4c92fea121c617",
   "lastOpenFiles": [
+    "design/03_experience_design.md",
+    "design/01_purpose_concept.md",
+    "無題のファイル.md",
     "prompts/system_prompt_v1.md.tmp.19524.13ef552ddda9",
     "CLAUDE.md.tmp.19524.7b62c38ee145",
     "CLAUDE.md.tmp.19524.72092c174ee6",
     "prompts/system_prompt_v1.md.tmp.19524.e54a6b01b815",
     "CLAUDE.md",
     "CLAUDE.md.tmp.19524.a319266a9b0f",
-    "design/01_purpose_concept.md",
     "prompts/system_prompt_v1.md",
     "design/04_mvp_spec.md",
-    "design/03_experience_design.md",
     "design/02_design_philosophy.md",
     "ようこそ.md",
     "src",
