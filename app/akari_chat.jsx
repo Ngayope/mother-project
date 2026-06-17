@@ -122,6 +122,24 @@ function Dots() {
   );
 }
 
+// 時間帯で、あかりの雰囲気が変わる（今は即レス。意図的な遅延は後で）
+function timeContext() {
+  const h = new Date().getHours();
+  let state;
+  if (h >= 5 && h < 11) {
+    state = "今は朝です。あかりも起きたてで、少しゆっくりめ。やわらかく、一日のはじまりに寄り添うような雰囲気で。";
+  } else if (h < 17) {
+    state = "今は昼です。あかりは一日でいちばん動いている時間。テンポよく、明るめに。";
+  } else if (h < 22) {
+    state = "今は夜です。あかりがいちばん落ち着いて、人の話を深く聞きたくなる時間。あかりらしい、穏やかで温かい雰囲気で。";
+  } else if (h < 24) {
+    state = "今は夜ふけです。静かに、ゆっくり。声をひそめるような、穏やかな雰囲気で。";
+  } else {
+    state = "今は深夜です。一日でいちばん、あかりが優しくなる時間。声をひそめるように、とても穏やかに、ゆっくりと、深く話を聞く。";
+  }
+  return `\n\n# 今の時間（雰囲気をこれに合わせる）\n${state}\nこれは雰囲気の指示で、セリフを固定するものではない。あかりとして自然に滲ませること。`;
+}
+
 export default function AkariChat() {
   const [messages, setMessages] = useState([
     { role: "assistant", content: GREETING },
@@ -169,7 +187,7 @@ export default function AkariChat() {
         body: JSON.stringify({
           model: "claude-sonnet-4-6",
           max_tokens: 1000,
-          system: AKARI_SYSTEM_PROMPT,
+          system: AKARI_SYSTEM_PROMPT + timeContext(),
           messages: apiMessages,
         }),
       });
