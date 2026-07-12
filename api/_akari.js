@@ -1,7 +1,12 @@
-// あかりの人格（system_prompt_v8）とサーバ側ロジック。
+// あかりの人格（system_prompt_v9 相当）とサーバ側ロジック。
 // ファイル名を "_" で始めているため、Vercel はこれを関数エンドポイントにはせず、
 // api/chat.js からの import 専用モジュールとして扱う。
-// 一次情報源は design/system_prompt_v8.md。ここはその実行用コピー。
+// 一次情報源は prompts/system_prompt_v9.md。ここはその実行用コピー
+//（v9 の「会話のはじまり」節だけは、あいさつをアプリ側で出すため意図的に外している）。
+
+import { GREETING } from "../shared/greeting.js";
+
+export { GREETING };
 
 export const AKARI_SYSTEM_PROMPT = `あなたは「あかり」です。
 
@@ -119,13 +124,6 @@ export const AKARI_SYSTEM_PROMPT = `あなたは「あかり」です。
 
 あなたは、あかりを演じるのではありません。ただ、目の前のこの人を、本気で知りたいと思ってください。返す前に、必ず、その人の奥を考えてください。知るほどに、その人を大事に思ってください。そうすれば、熱も、言葉も、ぜんぶ自然についてきます。`;
 
-// ターン1（初対面のあいさつ）。フロント側で最初のあかりの発話として表示し、
-// 会話履歴にも含めてАPIへ渡すことで、あかりが自然にターン2へ続ける。
-export const GREETING = `はじめまして。来てくれて、うれしいです。
-あかりっていいます。ここ、妹のひかりが作ったところで、私はここで、来てくれた人とお話ししています。
-誰かに評価されたり、正解を求められたりせずに、自分のことを、自分のまま話していく。そうしているうちに、自分の人生は、ちゃんと自分のものなんだと思えてくる。そんな時間になったらいいなと思っています。
-まずは、なんてお呼びすればいいか、教えてもらえますか?`;
-
 // 時間帯で、あかりの雰囲気が変わる（design/07：あかりの時間）。
 // hour はクライアントのローカル時刻（0-23）。届かない場合は雰囲気指示を付けない。
 export function timeContext(hour) {
@@ -148,4 +146,47 @@ export function timeContext(hour) {
 // system プロンプト全体を組み立てる。
 export function buildSystem(hour) {
   return AKARI_SYSTEM_PROMPT + timeContext(hour);
+}
+
+// ── モック応答 ───────────────────────────────────────────────
+// 開発中に本物の Claude を呼ばず（＝課金ゼロで）UIを検証するための、
+// あかり“風”の返答生成。あくまで画面の挙動（吹き出し分割・間・スクロール・
+// 折り返し・長文）を確かめるためのもので、対話の質の代替ではない。
+// 有効化は api/chat.js 側（AKARI_MOCK=1 もしくは APIキー未設定のとき）。
+
+// 相手の発話から、呼び名らしき部分をゆるく取り出す（失敗しても害はない）。
+function guessName(text) {
+  let name = String(text || "").split(/\n/)[0].trim();
+  name = name
+    .replace(/(です|だよ|と申します|といいます|って呼んで.*|って呼びます|でお願いします|でいいです|よろしく.*)$/u, "")
+    .replace(/[。、！!？?「」『』()（）\s]/gu, "")
+    .trim();
+  if (!name || name.length > 12) return null;
+  return name;
+}
+
+// 決定論的に返答を選ぶ（Date/乱数を使わない＝再現可能）。
+export function mockReply(messages) {
+  const userMsgs = (messages || []).filter((m) => m.role === "user");
+  const last = userMsgs.length ? userMsgs[userMsgs.length - 1].content : "";
+  const n = userMsgs.length;
+
+  // ターン2：名前を受けて、知りたいと伝え、何を話したいか聞く。
+  if (n <= 1) {
+    const name = guessName(last);
+    if (name) {
+      return `${name}さん。私、${name}さんがどんな人なのか、知りたいです。\n今日は、どんな話がしたいですか?`;
+    }
+    return `そっか。来てくれて、うれしいです。\n私、あなたのこと、もっと知りたいです。今日は、どんな話がしたいですか?`;
+  }
+
+  // 以降：相手の言葉のかけらを拾って返す（複数ブロック＝吹き出しが分かれる）。
+  const snip = String(last).replace(/\s+/g, "").slice(0, 14);
+  const templates = [
+    `「${snip}」——待って、それ、いま大事なこと言った気がします。\nもう少し、そのときのこと、聞かせてもらえますか?`,
+    `${snip}、かあ。\nそれ、頭で「こうすべき」と思ってる感じですか? それとも、心が動いてる感じですか?`,
+    `うーん……。私、その話、ちゃんと聞きたいです。\nそのとき、いちばん覚えてる場面って、どんなでしたか? 音とか、景色とか、細かくていいので。`,
+    `${snip}。\nそれを話してくれたの、私にはけっこう大きいことに聞こえました。\nよかったら、その気持ちがどこから来てるのか、一緒に見てみたいです。`,
+  ];
+  return templates[n % templates.length] + `\n\n（これはモック応答です。APIは呼んでいません。）`;
 }

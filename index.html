@@ -2,8 +2,36 @@
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <!-- viewport-fit=cover で iPhone のノッチ／ホームバー周りまで地の色を敷く。
+         ズームは塞がない（アクセシビリティ）。自動ズームは入力欄を16pxにして防ぐ。 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
     <title>あかり</title>
+    <meta name="description" content="あなたの人生は、あなたのものでいい。あかりと、ただ話す時間。" />
+
+    <!-- モバイルのアドレスバー色（時間帯に応じて JS が更新する） -->
+    <meta name="theme-color" content="#F3EBDB" />
+
+    <!-- ホーム画面に追加したときの見え方（アプリらしく） -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="あかり" />
+
+    <!-- アイコン -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/akari.png" />
+
+    <!-- リンクを送ったときのプレビュー（LINE / SNS など） -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="あかり" />
+    <meta property="og:description" content="あなたの人生は、あなたのものでいい。あかりと、ただ話す時間。" />
+    <meta property="og:image" content="/akari.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="あかり" />
+    <meta name="twitter:description" content="あなたの人生は、あなたのものでいい。あかりと、ただ話す時間。" />
+    <meta name="twitter:image" content="/akari.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- 本文=落ち着いた温かいゴシック / 差し色=品のある明朝 -->

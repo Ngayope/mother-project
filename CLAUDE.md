@@ -2,7 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-このファイルは、`design/`配下の4つの設計ドキュメントと`prompts/system_prompt_v1.md`の内容を統合した、本プロジェクトの完全な設計書です。個別のdesignドキュメントを読み返さなくても、このファイルだけで自律的に作業を進められることを目指しています。
+このファイルは、`design/`配下の設計ドキュメント群と実行中の人格プロンプト（`prompts/system_prompt_v9.md` 相当）の内容を統合した、本プロジェクトの設計書です。個別のdesignドキュメントを読み返さなくても、このファイルだけで自律的に作業を進められることを目指しています。
+
+> 注：本プロジェクトは既に**動く実装（Vite + React のあかりチャット）**を持っています。アプリの動かし方・構成・課金を避けるモックモード・デプロイは `README.md` を参照。以下は設計思想の一次統合ビューです。
 
 ---
 
@@ -185,8 +187,10 @@ git push
 
 ### 実装方法
 
-Claude Projectにシステムプロンプトを設定するだけ。
-→ `prompts/system_prompt_v1.md` を参照。
+当初は「Claude Projectにプロンプトを設定するだけ」を想定していたが、現在は独立した
+Webアプリ（Vite + React、`api/chat.js` が Claude API をプロキシ）として実装済み。
+人格プロンプトは `api/_akari.js` に埋め込み（`prompts/system_prompt_v9.md` 相当）。
+動かし方・モックモード・デプロイは `README.md` を参照。
 
 ### テスト対象
 
@@ -200,26 +204,45 @@ Claude Projectにシステムプロンプトを設定するだけ。
 
 ## 現在のステータスとロードマップ
 
-- `design/`配下の4ドキュメント（目的・コンセプト、設計哲学、体験設計、MVP仕様）：確定
-- `prompts/system_prompt_v1.md`：初稿完成（テスト前）。最初のトーンと、深モード/軽モードを自然に分岐させる設計を含む
-- 実装コード（アプリ・スクリプト等）はまだ存在しない
+- `design/`配下の設計ドキュメント群（目的・コンセプト、設計哲学、体験設計、MVP仕様、
+  あかり対話・キャラクター設計 ほか）：確定
+- 人格プロンプト：`prompts/` に v2〜v9。実行中は v9 相当（`api/_akari.js` に埋め込み）
+- **実装済み**：Vite + React のあかりチャットアプリ（`src/` `api/` `shared/`）。
+  モバイル実機対応・会話のセッション内保持・送信リトライ・履歴上限によるコスト制御・
+  課金ゼロで試せるモックモードを備える
 
 ### 今後の流れ
 
-1. `prompts/system_prompt_v1.md`の内容をClaude Projectのカスタム指示として設定する
-2. シェアハウスのメンバー3人に試用してもらう
-3. フィードバックをもとに`prompts/system_prompt_v1.md`を改善する（v1のTODO「テスト後にフィードバックを反映する」）
-4. 成功基準（3人中2人が「またこれを使いたい」/「自分について何か気づいた」）を満たしたら、Claude Codeでの本格開発へ移行する
+1. モックモード（`AKARI_MOCK=1`）で見た目・操作感を仕上げる（課金なし）
+2. 本物のキーで質を確認し、必要ならプロンプト（v10 以降）を改善する
+3. Vercel にデプロイ（+ Deployment Protection でキーを守る）し、シェアハウスの3人に試用してもらう
+4. 成功基準（3人中2人が「またこれを使いたい」/「自分について何か気づいた」）を満たしたら、記憶・図鑑等の次スコープへ
+
+### プロンプトを直すときの出典ルール
+
+実行中のプロンプトは `api/_akari.js` の `AKARI_SYSTEM_PROMPT`（v9 相当。あいさつを画面側で
+出すため「会話のはじまり」節だけ外してある）。人格を変えるときは、まず `prompts/system_prompt_v9.md`
+（一次情報源）を直し、その差分を `api/_akari.js` の埋め込みに反映する。あいさつ文だけは
+`shared/greeting.js` が唯一の出典（クライアントとサーバが共有）。
 
 ---
 
 ## リポジトリ構造
 
-- `design/01_purpose_concept.md` — 本ファイル「1. 目的とコンセプト」の出典
-- `design/02_design_philosophy.md` — 本ファイル「2. 設計哲学」の出典
-- `design/03_experience_design.md` — 本ファイル「3. 体験設計」の出典
-- `design/04_mvp_spec.md` — 本ファイル「4. MVP仕様」の出典
-- `prompts/system_prompt_v1.md` — Claude Projectに設定するシステムプロンプト本体（ステータス・TODO管理あり）
+設計（`design/`、番号順に読む前提）：
+- `01_purpose_concept.md`〜`04_mvp_spec.md` — 本ファイル 1〜4 の出典
+- `05_akari_dialogue_design.md` / `06_character_design.md` — あかりの対話ふるまい・人格/物語
+- `00_core_theory.md` `00b_life_requirements.md` `07_overall_structure.md` `08_zukan_design.md`
+  `09_function_architecture.md` `10_gratitude.md` `11_community.md` — 理論と将来スコープ（MVP外含む）
+
+プロンプト（`prompts/`）：
+- `system_prompt_v2.md`〜`v9.md` — 人格プロンプトの変遷。実行中は v9 相当
+
+実装：
+- `src/`（`AkariChat.jsx` `main.jsx` `index.css`）— チャットUI
+- `api/`（`chat.js` プロキシ / `_akari.js` 人格＋時間帯＋モック）
+- `shared/greeting.js` — あいさつの唯一の出典
+- `index.html` `vite.config.js` `README.md`
 
 design/配下の各ドキュメントは番号順に読むことを前提としており、本ファイルはその要約ではなく統合版。設計思想を変更する場合は、まずdesign/配下の該当ドキュメントを更新し、その後このCLAUDE.mdに反映すること（design/が一次情報源、CLAUDE.mdは作業用の統合ビュー）。
 
@@ -227,7 +250,7 @@ design/配下の各ドキュメントは番号順に読むことを前提とし�
 
 ## システムプロンプトを書く・編集する際の実務チェックリスト
 
-`prompts/system_prompt_v1.md`（または将来のv2以降）を編集する際は、上記「2. 設計哲学」を踏まえつつ、以下を具体的にチェックする：
+人格プロンプト（`api/_akari.js` / `prompts/system_prompt_v9.md` 以降）を編集する際は、上記「2. 設計哲学」を踏まえつつ、以下を具体的にチェックする：
 
 - [ ] 評価語（「いいですね」「それでいい」「素敵」「頑張りましたね」等）が含まれていないか
 - [ ] 「そうなんですね」「わかります」のような汎用共感の繰り返しになっていないか

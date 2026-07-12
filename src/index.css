@@ -22,7 +22,11 @@
 html,
 body,
 #root {
-  height: 100%;
+  /* --app-h は JS が visualViewport の高さを流し込む（キーボード対応）。
+     未対応環境は 100dvh、さらに古い環境は 100vh にフォールバック。 */
+  height: 100vh;
+  height: 100dvh;
+  height: var(--app-h, 100dvh);
   margin: 0;
 }
 
@@ -33,6 +37,16 @@ body {
   background: #f2ead9;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* モバイルで引っ張っての更新やゴムスクロールで会話が飛ばないように */
+  overscroll-behavior: none;
+  /* タップ時の青いハイライトを消す（ネイティブアプリのような手触り） */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ボタン等はタップ領域を確保しつつ、青ハイライトを抑える */
+button,
+textarea {
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ふわっと現れる（急かさない・やわらかい） */
@@ -81,4 +95,17 @@ body {
 ::-webkit-scrollbar-thumb {
   background: rgba(150, 125, 90, 0.22);
   border-radius: 8px;
+}
+
+/* 動きに敏感な人のために：アニメーションを最小限にする。
+   灯りの明滅や吹き出しの立ち上がりを止め、静かなまま表示する。 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
