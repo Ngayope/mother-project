@@ -28,7 +28,14 @@ export default defineConfig(({ mode }) => {
     process.env.ANTHROPIC_API_KEY = env.ANTHROPIC_API_KEY;
   }
 
+  // モックモードかどうかをクライアントにも伝える（バッジを最初から出すため）。
+  // AKARI_MOCK=1 で dev を起動したときだけ true。本番(Vercel)では未設定＝false。
+  const mockMode = process.env.AKARI_MOCK === "1" || env.AKARI_MOCK === "1";
+
   return {
+    define: {
+      __AKARI_MOCK__: JSON.stringify(mockMode),
+    },
     plugins: [react(), apiDevServer()],
   };
 });
